@@ -1,12 +1,13 @@
 const { google } = require("googleapis");
 const stream = require("stream");
 
-const KEYFILEPATH = "./config/credentials.json"; // Adjust the path if needed
-const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
+const credentialsBase64 = process.env.GOOGLE_CREDENTIALS;
+const credentialsJSON = Buffer.from(credentialsBase64, "base64").toString("utf-8");
+const credentials = JSON.parse(credentialsJSON);
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: KEYFILEPATH,
-  scopes: SCOPES,
+  credentials,
+  scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
 
 const drive = google.drive({ version: "v3", auth });
