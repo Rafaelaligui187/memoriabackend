@@ -1,0 +1,12 @@
+.vercel
+# Ignore node modules and environment files
+node_modules/
+.env
+config/credentials.json
+
+# Ignore uploaded files
+uploads/
+
+# Ignore log files
+*.log
+npm-debug.log*
