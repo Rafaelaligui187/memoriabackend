@@ -1,0 +1,11 @@
+*Installing dependencies from package.json*
+--->npm install 
+
+
+
+
+*Start the server with different terminal*
+
+mongod -----> for connecting the database MongoDB
+mongosh ----> for connecting the localnetwork
+node server.js -----> start the server
