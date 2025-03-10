@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const studentSchema = new mongoose.Schema({
+const elementarystudentSchema = new mongoose.Schema({
   studentID: {
     type: String,
     unique: true, // 🚨 If this is causing errors, remove "unique: true"
@@ -12,14 +12,13 @@ const studentSchema = new mongoose.Schema({
   
   firstName: String,
   lastName: String,
-  course: String,
-  block: String,
-  yearlevel: String,
+  grade: String,
+  section: String,
   gender: String,
   personalQuote: String,
   profilePicture: String,
 });
 
-const CollegeStudent = mongoose.model("CollegeStudent", studentSchema, "college_students");
-module.exports = CollegeStudent;
+const ElementaryStudent = mongoose.model("ElementaryStudent", elementarystudentSchema, "elementary_students");
+module.exports = ElementaryStudent;
 

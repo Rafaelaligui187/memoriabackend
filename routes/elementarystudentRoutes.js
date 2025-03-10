@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
-const Student = require("../models/Student");
+const ElementaryStudent = require("../models/elementaryStudent");
 const { uploadFile } = require("../utils/googleDrive");
 
 const router = express.Router();
@@ -9,7 +9,7 @@ const upload = multer({ dest: "uploads/" });
 
 router.post("/", upload.single("profilePicture"), async (req, res) => {
   try {
-    const { firstName, lastName, gender, block, yearlevel, personalQuote, course } = req.body;
+    const { firstName, lastName, gender, grade, section, personalQuote } = req.body;
     let profilePicture = "";
 
     if (req.file) {
@@ -19,13 +19,12 @@ router.post("/", upload.single("profilePicture"), async (req, res) => {
       });
     }
 
-    const newStudent = new Student({
+    const newStudent = new ElementaryStudent({
       firstName,
       lastName,
-      course,
-      block,
       gender,
-      yearlevel,
+      grade,
+      section,
       personalQuote,
       profilePicture,
     });
@@ -39,8 +38,8 @@ router.post("/", upload.single("profilePicture"), async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const students = await Student.find();
-    res.json(students);
+    const elementarystudents = await ElementaryStudent.find();
+    res.json(elementarystudents); // ✅ FIXED (was incorrectly using `students`)
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -48,7 +47,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const student = await Student.findById(req.params.id);
+    const student = await ElementaryStudent.findById(req.params.id);
     if (!student) return res.status(404).json({ error: "Student not found" });
     res.json(student);
   } catch (error) {
@@ -58,7 +57,7 @@ router.get("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    await Student.findByIdAndDelete(req.params.id);
+    await ElementaryStudent.findByIdAndDelete(req.params.id);
     res.json({ message: "Student deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
