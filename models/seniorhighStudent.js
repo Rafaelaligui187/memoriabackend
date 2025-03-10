@@ -1,25 +1,16 @@
 const mongoose = require("mongoose");
 
-const seniorhighstudentSchema = new mongoose.Schema({
-  studentID: {
-    type: String,
-    unique: true, // 🚨 If this is causing errors, remove "unique: true"
-    default: function () {
-      return new mongoose.Types.ObjectId().toHexString(); // Generates unique ID
-    },
-  },
-
-  
+const seniorhighStudentSchema = new mongoose.Schema({
+  studentID: { type: String, unique: true, required: true }, // Unique student ID
   firstName: String,
   lastName: String,
-  grade: String,
-  section: String,
-  strand: String,
-  gender: String,
   personalQuote: String,
-  profilePicture: String,
+  gender: String,
+  section: String,
+  grade: String,
+  strand: String,
+  profilePicture: String
 });
 
-const SeniorhighStudent = mongoose.model("SeniorhighStudent", seniorhighstudentSchema, "seniorhigh_students");
-module.exports = SeniorhighStudent;
-
+// Export model with "senior_students" collection name
+module.exports = mongoose.model("SeniorhighStudent", seniorhighStudentSchema, "seniorhigh_students");

@@ -2,31 +2,30 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const ElementaryStudent = require("../models/elementaryStudent");
-const { uploadFile } = require("../utils/googleDrive");
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
 
-router.post("/", upload.single("profilePicture"), async (req, res) => {
+// Create a new elementary student
+router.post("/", async (req, res) => {
   try {
-    const { firstName, lastName, gender, grade, section, personalQuote } = req.body;
-    let profilePicture = "";
+    const { firstName, lastName, gender, grade, section, personalQuote, profilePicture } = req.body;
 
-    if (req.file) {
-      profilePicture = await uploadFile(req.file.path, req.file.originalname);
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.error("Error deleting temp file:", err);
-      });
+    if (!firstName || !lastName || !gender || !grade || !section || !profilePicture) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
+    // Generate unique studentID (random 8-character alphanumeric string)
+    const studentID = Math.random().toString(36).substring(2, 10).toUpperCase();
+
     const newStudent = new ElementaryStudent({
+      studentID,
       firstName,
       lastName,
       gender,
       grade,
       section,
       personalQuote,
-      profilePicture,
+      profilePicture
     });
 
     await newStudent.save();
@@ -36,15 +35,17 @@ router.post("/", upload.single("profilePicture"), async (req, res) => {
   }
 });
 
+// Get all elementary students
 router.get("/", async (req, res) => {
   try {
-    const elementarystudents = await ElementaryStudent.find();
-    res.json(elementarystudents); // ✅ FIXED (was incorrectly using `students`)
+    const students = await ElementaryStudent.find();
+    res.json(students);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
+// Get a single elementary student by ID
 router.get("/:id", async (req, res) => {
   try {
     const student = await ElementaryStudent.findById(req.params.id);
@@ -55,10 +56,15 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Delete an elementary student
 router.delete("/:id", async (req, res) => {
   try {
+    const student = await ElementaryStudent.findById(req.params.id);
+    if (!student) return res.status(404).json({ error: "Student not found" });
+
     await ElementaryStudent.findByIdAndDelete(req.params.id);
-    res.json({ message: "Student deleted" });
+    
+    res.json({ message: "Student deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
