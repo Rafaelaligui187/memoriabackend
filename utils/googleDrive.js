@@ -1,7 +1,8 @@
 const { google } = require("googleapis");
-const stream = require("stream");
+const fs = require("fs");
+const path = require("path");
 
-const KEYFILEPATH = "./config/credentials.json"; // Adjust the path if needed
+const KEYFILEPATH = path.join(__dirname, "../config/credentials.json");
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 
 const auth = new google.auth.GoogleAuth({
@@ -11,32 +12,24 @@ const auth = new google.auth.GoogleAuth({
 
 const drive = google.drive({ version: "v3", auth });
 
-async function uploadFile(fileBuffer, fileName, mimeType) {
+async function uploadFile(filePath, fileName) {
   try {
-    const bufferStream = new stream.PassThrough();
-    bufferStream.end(fileBuffer);
-
     const response = await drive.files.create({
       requestBody: {
         name: fileName,
-        parents: [process.env.GOOGLE_DRIVE_FOLDER_ID], // Ensure this env variable is set
+        parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
       },
       media: {
-        mimeType,
-        body: bufferStream,
+        mimeType: "image/jpeg",
+        body: fs.createReadStream(filePath),
       },
     });
 
-    if (!response.data.id) {
-      console.error("Google Drive upload failed:", response);
-      return null;
-    }
-
     const fileId = response.data.id;
 
-    // ✅ Make the file publicly accessible
+    // Make the file publicly accessible
     await drive.permissions.create({
-      fileId,
+      fileId: fileId,
       requestBody: {
         role: "reader",
         type: "anyone",
